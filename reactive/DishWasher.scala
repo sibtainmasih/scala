@@ -1,5 +1,5 @@
 import monix.eval.Task
-import monix.reactive.Observable
+import monix.reactive.{Observable, OverflowStrategy}
 import monix.execution.Ack
 import monix.execution.Scheduler
 import monix.execution.ExecutionModel.AlwaysAsyncExecution
@@ -36,8 +36,9 @@ val stream = Observable
   .flatMap(d =>
     Observable
       .fromTask(d.wash)
-      .executeOn(
-        Scheduler.io(name = "sub-io-ctx", executionModel = AlwaysAsyncExecution)
+      .observeOn(
+        Scheduler.io(name = "sub-io-ctx", executionModel = AlwaysAsyncExecution),
+        OverflowStrategy.Unbounded
       )
   )
   .doOnNext { d =>
@@ -58,38 +59,38 @@ Thread.sleep(12000)
 println(s"$log Program Ends.")
 
 /* Output
-[01:24:56.7340] [run-main-17] Program starts.
-[01:24:56.7440] [run-main-17] E: 1
-[01:24:56.7520] [sub-io-ctx-1334] washing dish 1
-[01:24:57.7610] [sub-io-ctx-1334] Dish washed 1.
-[01:24:57.7620] [sub-io-ctx-1334] O:Dish(1,Clean)
-[01:24:57.7680] [main-comp-ctx-1335] E: 2
-[01:24:57.7720] [sub-io-ctx-1338] washing dish 2
-[01:24:58.7730] [sub-io-ctx-1338] Dish washed 2.
-[01:24:58.7730] [sub-io-ctx-1338] O:Dish(2,Clean)
-[01:24:58.7760] [main-comp-ctx-1335] E: 3
-[01:24:58.7810] [sub-io-ctx-1340] washing dish 3
-[01:24:59.7820] [sub-io-ctx-1340] Dish washed 3.
-[01:24:59.7820] [sub-io-ctx-1340] O:Dish(3,Clean)
-[01:24:59.7830] [main-comp-ctx-1335] E: 4
-[01:24:59.7880] [sub-io-ctx-1342] washing dish 4
-[01:25:00.7880] [sub-io-ctx-1342] Dish washed 4.
-[01:25:00.7890] [sub-io-ctx-1342] O:Dish(4,Clean)
-[01:25:00.7900] [main-comp-ctx-1335] E: 5
-[01:25:00.7930] [sub-io-ctx-1344] washing dish 5
-[01:25:01.7940] [sub-io-ctx-1344] Dish washed 5.
-[01:25:01.7950] [sub-io-ctx-1344] O:Dish(5,Clean)
-[01:25:01.7960] [main-comp-ctx-1335] E: 6
-[01:25:01.8000] [sub-io-ctx-1346] washing dish 6
-[01:25:02.8000] [sub-io-ctx-1346] Dish washed 6.
-[01:25:02.8000] [sub-io-ctx-1346] O:Dish(6,Clean)
-[01:25:02.8010] [main-comp-ctx-1335] E: 7
-[01:25:02.8050] [sub-io-ctx-1348] washing dish 7
-[01:25:03.8050] [sub-io-ctx-1348] Dish washed 7.
-[01:25:03.8050] [sub-io-ctx-1348] O:Dish(7,Clean)
-[01:25:03.8060] [main-comp-ctx-1335] E: 8
-[01:25:03.8100] [sub-io-ctx-1350] washing dish 8
-[01:25:04.8110] [sub-io-ctx-1350] Dish washed 8.
-[01:25:04.8110] [sub-io-ctx-1350] O:Dish(8,Clean)
-[01:25:08.7990] [run-main-17] Program Ends.
+[01:50:09.7820] [run-main-20] Program starts.
+[01:50:09.7920] [run-main-20] E: 1
+[01:50:09.7980] [run-main-20] washing dish 1
+[01:50:10.8110] [sub-io-ctx-1625] Dish washed 1.
+[01:50:10.8120] [sub-io-ctx-1625] O:Dish(1,Clean)
+[01:50:10.8160] [main-comp-ctx-1626] E: 2
+[01:50:10.8170] [main-comp-ctx-1626] washing dish 2
+[01:50:11.8190] [sub-io-ctx-1628] Dish washed 2.
+[01:50:11.8190] [sub-io-ctx-1628] O:Dish(2,Clean)
+[01:50:11.8220] [main-comp-ctx-1626] E: 3
+[01:50:11.8220] [main-comp-ctx-1626] washing dish 3
+[01:50:12.8240] [sub-io-ctx-1629] Dish washed 3.
+[01:50:12.8250] [sub-io-ctx-1629] O:Dish(3,Clean)
+[01:50:12.8260] [main-comp-ctx-1626] E: 4
+[01:50:12.8270] [main-comp-ctx-1626] washing dish 4
+[01:50:13.8280] [sub-io-ctx-1630] Dish washed 4.
+[01:50:13.8280] [sub-io-ctx-1630] O:Dish(4,Clean)
+[01:50:13.8300] [main-comp-ctx-1626] E: 5
+[01:50:13.8300] [main-comp-ctx-1626] washing dish 5
+[01:50:14.8320] [sub-io-ctx-1631] Dish washed 5.
+[01:50:14.8330] [sub-io-ctx-1631] O:Dish(5,Clean)
+[01:50:14.8340] [main-comp-ctx-1626] E: 6
+[01:50:14.8350] [main-comp-ctx-1626] washing dish 6
+[01:50:15.8360] [sub-io-ctx-1632] Dish washed 6.
+[01:50:15.8370] [sub-io-ctx-1632] O:Dish(6,Clean)
+[01:50:15.8390] [main-comp-ctx-1626] E: 7
+[01:50:15.8400] [main-comp-ctx-1626] washing dish 7
+[01:50:16.8420] [sub-io-ctx-1633] Dish washed 7.
+[01:50:16.8420] [sub-io-ctx-1633] O:Dish(7,Clean)
+[01:50:16.8430] [main-comp-ctx-1626] E: 8
+[01:50:16.8440] [main-comp-ctx-1626] washing dish 8
+[01:50:17.8460] [sub-io-ctx-1634] Dish washed 8.
+[01:50:17.8460] [sub-io-ctx-1634] O:Dish(8,Clean)
+[01:50:22.9090] [run-main-20] Program Ends.
 */
