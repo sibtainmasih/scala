@@ -33,8 +33,8 @@ val stream = Observable
     }
   }
   .map(Dish(_))
-  .asyncBoundary(OverflowStrategy.BackPressure(2))
-  .mapParallelUnordered(1)(d => d.wash)
+  .asyncBoundary(OverflowStrategy.BackPressure(50))
+  .mapParallelUnordered(2)(d => d.wash)
   .doOnNext { d =>
     Task {
       println(s"$log Dish washed ${d.id}.")
@@ -53,334 +53,405 @@ Thread.sleep(30000)
 println(s"$log Program Ends.")
 
 /* Output
-[04:28:24.1240] [run-main-0] Program starts.
-[04:28:26.7190] [run-main-0] E: 1
-[04:28:26.7410] [main-comp-ctx-133] washing dish 1
-[04:28:26.7540] [run-main-0] E: 2
-[04:28:26.7550] [run-main-0] E: 3
-[04:28:26.9450] [main-comp-ctx-133] Dish washed 1.
-[04:28:26.9460] [main-comp-ctx-133] O:Dish(1,Clean)
-[04:28:26.9550] [main-comp-ctx-133] washing dish 2
-[04:28:27.1560] [main-comp-ctx-133] Dish washed 2.
-[04:28:27.1570] [main-comp-ctx-133] O:Dish(2,Clean)
-[04:28:27.1580] [main-comp-ctx-133] washing dish 3
-[04:28:27.3590] [main-comp-ctx-133] Dish washed 3.
-[04:28:27.3600] [main-comp-ctx-133] O:Dish(3,Clean)
-[04:28:27.3660] [main-comp-ctx-133] E: 4
-[04:28:27.3670] [main-comp-ctx-133] E: 5
-[04:28:27.3670] [main-comp-ctx-134] washing dish 4
-[04:28:27.3680] [main-comp-ctx-133] E: 6
-[04:28:27.5680] [main-comp-ctx-134] Dish washed 4.
-[04:28:27.5680] [main-comp-ctx-134] O:Dish(4,Clean)
-[04:28:27.5700] [main-comp-ctx-134] washing dish 5
-[04:28:27.7700] [main-comp-ctx-134] Dish washed 5.
-[04:28:27.7710] [main-comp-ctx-134] O:Dish(5,Clean)
-[04:28:27.7720] [main-comp-ctx-134] washing dish 6
-[04:28:27.9730] [main-comp-ctx-134] Dish washed 6.
-[04:28:27.9730] [main-comp-ctx-134] O:Dish(6,Clean)
-[04:28:27.9750] [main-comp-ctx-134] E: 7
-[04:28:27.9770] [main-comp-ctx-134] E: 8
-[04:28:27.9770] [main-comp-ctx-133] washing dish 7
-[04:28:27.9770] [main-comp-ctx-134] E: 9
-[04:28:28.1770] [main-comp-ctx-133] Dish washed 7.
-[04:28:28.1780] [main-comp-ctx-133] O:Dish(7,Clean)
-[04:28:28.1780] [main-comp-ctx-133] washing dish 8
-[04:28:28.3800] [main-comp-ctx-133] Dish washed 8.
-[04:28:28.3800] [main-comp-ctx-133] O:Dish(8,Clean)
-[04:28:28.3810] [main-comp-ctx-133] washing dish 9
-[04:28:28.5810] [main-comp-ctx-133] Dish washed 9.
-[04:28:28.5820] [main-comp-ctx-133] O:Dish(9,Clean)
-[04:28:28.5830] [main-comp-ctx-133] E: 10
-[04:28:28.5840] [main-comp-ctx-133] E: 11
-[04:28:28.5840] [main-comp-ctx-134] washing dish 10
-[04:28:28.5840] [main-comp-ctx-133] E: 12
-[04:28:28.7850] [main-comp-ctx-134] Dish washed 10.
-[04:28:28.7850] [main-comp-ctx-134] O:Dish(10,Clean)
-[04:28:28.7860] [main-comp-ctx-134] washing dish 11
-[04:28:28.9870] [main-comp-ctx-134] Dish washed 11.
-[04:28:28.9870] [main-comp-ctx-134] O:Dish(11,Clean)
-[04:28:28.9880] [main-comp-ctx-134] washing dish 12
-[04:28:29.1880] [main-comp-ctx-134] Dish washed 12.
-[04:28:29.1880] [main-comp-ctx-134] O:Dish(12,Clean)
-[04:28:29.1900] [main-comp-ctx-134] E: 13
-[04:28:29.1910] [main-comp-ctx-134] E: 14
-[04:28:29.1910] [main-comp-ctx-133] washing dish 13
-[04:28:29.1920] [main-comp-ctx-134] E: 15
-[04:28:29.3920] [main-comp-ctx-133] Dish washed 13.
-[04:28:29.3930] [main-comp-ctx-133] O:Dish(13,Clean)
-[04:28:29.3940] [main-comp-ctx-133] washing dish 14
-[04:28:29.5940] [main-comp-ctx-133] Dish washed 14.
-[04:28:29.5950] [main-comp-ctx-133] O:Dish(14,Clean)
-[04:28:29.5960] [main-comp-ctx-133] washing dish 15
-[04:28:29.7960] [main-comp-ctx-133] Dish washed 15.
-[04:28:29.7960] [main-comp-ctx-133] O:Dish(15,Clean)
-[04:28:29.7970] [main-comp-ctx-133] E: 16
-[04:28:29.7980] [main-comp-ctx-133] E: 17
-[04:28:29.7980] [main-comp-ctx-134] washing dish 16
-[04:28:29.7990] [main-comp-ctx-133] E: 18
-[04:28:29.9990] [main-comp-ctx-134] Dish washed 16.
-[04:28:29.9990] [main-comp-ctx-134] O:Dish(16,Clean)
-[04:28:30.0000] [main-comp-ctx-134] washing dish 17
-[04:28:30.2000] [main-comp-ctx-134] Dish washed 17.
-[04:28:30.2010] [main-comp-ctx-134] O:Dish(17,Clean)
-[04:28:30.2010] [main-comp-ctx-134] washing dish 18
-[04:28:30.4020] [main-comp-ctx-134] Dish washed 18.
-[04:28:30.4020] [main-comp-ctx-134] O:Dish(18,Clean)
-[04:28:30.4030] [main-comp-ctx-134] E: 19
-[04:28:30.4040] [main-comp-ctx-134] E: 20
-[04:28:30.4040] [main-comp-ctx-133] washing dish 19
-[04:28:30.4050] [main-comp-ctx-134] E: 21
-[04:28:30.6050] [main-comp-ctx-133] Dish washed 19.
-[04:28:30.6050] [main-comp-ctx-133] O:Dish(19,Clean)
-[04:28:30.6060] [main-comp-ctx-133] washing dish 20
-[04:28:30.8070] [main-comp-ctx-133] Dish washed 20.
-[04:28:30.8080] [main-comp-ctx-133] O:Dish(20,Clean)
-[04:28:30.8090] [main-comp-ctx-133] washing dish 21
-[04:28:31.0090] [main-comp-ctx-133] Dish washed 21.
-[04:28:31.0100] [main-comp-ctx-133] O:Dish(21,Clean)
-[04:28:31.0100] [main-comp-ctx-133] E: 22
-[04:28:31.0110] [main-comp-ctx-133] E: 23
-[04:28:31.0110] [main-comp-ctx-134] washing dish 22
-[04:28:31.0120] [main-comp-ctx-133] E: 24
-[04:28:31.2120] [main-comp-ctx-134] Dish washed 22.
-[04:28:31.2120] [main-comp-ctx-134] O:Dish(22,Clean)
-[04:28:31.2130] [main-comp-ctx-134] washing dish 23
-[04:28:31.4130] [main-comp-ctx-134] Dish washed 23.
-[04:28:31.4140] [main-comp-ctx-134] O:Dish(23,Clean)
-[04:28:31.4140] [main-comp-ctx-134] washing dish 24
-[04:28:31.6150] [main-comp-ctx-134] Dish washed 24.
-[04:28:31.6160] [main-comp-ctx-134] O:Dish(24,Clean)
-[04:28:31.6170] [main-comp-ctx-134] E: 25
-[04:28:31.6180] [main-comp-ctx-134] E: 26
-[04:28:31.6190] [main-comp-ctx-134] E: 27
-[04:28:31.6200] [main-comp-ctx-133] washing dish 25
-[04:28:31.8220] [main-comp-ctx-133] Dish washed 25.
-[04:28:31.8220] [main-comp-ctx-133] O:Dish(25,Clean)
-[04:28:31.8230] [main-comp-ctx-133] washing dish 26
-[04:28:32.0230] [main-comp-ctx-133] Dish washed 26.
-[04:28:32.0240] [main-comp-ctx-133] O:Dish(26,Clean)
-[04:28:32.0240] [main-comp-ctx-133] washing dish 27
-[04:28:32.2250] [main-comp-ctx-133] Dish washed 27.
-[04:28:32.2250] [main-comp-ctx-133] O:Dish(27,Clean)
-[04:28:32.2260] [main-comp-ctx-134] E: 28
-[04:28:32.2270] [main-comp-ctx-133] washing dish 28
-[04:28:32.2270] [main-comp-ctx-134] E: 29
-[04:28:32.2280] [main-comp-ctx-134] E: 30
-[04:28:32.4270] [main-comp-ctx-133] Dish washed 28.
-[04:28:32.4280] [main-comp-ctx-133] O:Dish(28,Clean)
-[04:28:32.4280] [main-comp-ctx-133] washing dish 29
-[04:28:32.6290] [main-comp-ctx-133] Dish washed 29.
-[04:28:32.6290] [main-comp-ctx-133] O:Dish(29,Clean)
-[04:28:32.6300] [main-comp-ctx-133] washing dish 30
-[04:28:32.8300] [main-comp-ctx-133] Dish washed 30.
-[04:28:32.8300] [main-comp-ctx-133] O:Dish(30,Clean)
-[04:28:32.8310] [main-comp-ctx-133] E: 31
-[04:28:32.8320] [main-comp-ctx-133] E: 32
-[04:28:32.8320] [main-comp-ctx-134] washing dish 31
-[04:28:32.8330] [main-comp-ctx-133] E: 33
-[04:28:33.0330] [main-comp-ctx-134] Dish washed 31.
-[04:28:33.0340] [main-comp-ctx-134] O:Dish(31,Clean)
-[04:28:33.0350] [main-comp-ctx-134] washing dish 32
-[04:28:33.2350] [main-comp-ctx-134] Dish washed 32.
-[04:28:33.2350] [main-comp-ctx-134] O:Dish(32,Clean)
-[04:28:33.2360] [main-comp-ctx-134] washing dish 33
-[04:28:33.4360] [main-comp-ctx-134] Dish washed 33.
-[04:28:33.4360] [main-comp-ctx-134] O:Dish(33,Clean)
-[04:28:33.4380] [main-comp-ctx-133] E: 34
-[04:28:33.4380] [main-comp-ctx-133] E: 35
-[04:28:33.4380] [main-comp-ctx-134] washing dish 34
-[04:28:33.4380] [main-comp-ctx-133] E: 36
-[04:28:33.6390] [main-comp-ctx-134] Dish washed 34.
-[04:28:33.6390] [main-comp-ctx-134] O:Dish(34,Clean)
-[04:28:33.6400] [main-comp-ctx-134] washing dish 35
-[04:28:33.8410] [main-comp-ctx-134] Dish washed 35.
-[04:28:33.8410] [main-comp-ctx-134] O:Dish(35,Clean)
-[04:28:33.8420] [main-comp-ctx-134] washing dish 36
-[04:28:34.0420] [main-comp-ctx-134] Dish washed 36.
-[04:28:34.0430] [main-comp-ctx-134] O:Dish(36,Clean)
-[04:28:34.0440] [main-comp-ctx-133] E: 37
-[04:28:34.0440] [main-comp-ctx-133] E: 38
-[04:28:34.0450] [main-comp-ctx-133] E: 39
-[04:28:34.0450] [main-comp-ctx-134] washing dish 37
-[04:28:34.2460] [main-comp-ctx-134] Dish washed 37.
-[04:28:34.2460] [main-comp-ctx-134] O:Dish(37,Clean)
-[04:28:34.2470] [main-comp-ctx-134] washing dish 38
-[04:28:34.4480] [main-comp-ctx-134] Dish washed 38.
-[04:28:34.4480] [main-comp-ctx-134] O:Dish(38,Clean)
-[04:28:34.4490] [main-comp-ctx-134] washing dish 39
-[04:28:34.6490] [main-comp-ctx-134] Dish washed 39.
-[04:28:34.6500] [main-comp-ctx-134] O:Dish(39,Clean)
-[04:28:34.6510] [main-comp-ctx-134] E: 40
-[04:28:34.6510] [main-comp-ctx-133] washing dish 40
-[04:28:34.6520] [main-comp-ctx-134] E: 41
-[04:28:34.6530] [main-comp-ctx-134] E: 42
-[04:28:34.8520] [main-comp-ctx-133] Dish washed 40.
-[04:28:34.8520] [main-comp-ctx-133] O:Dish(40,Clean)
-[04:28:34.8530] [main-comp-ctx-133] washing dish 41
-[04:28:35.0540] [main-comp-ctx-133] Dish washed 41.
-[04:28:35.0540] [main-comp-ctx-133] O:Dish(41,Clean)
-[04:28:35.0550] [main-comp-ctx-133] washing dish 42
-[04:28:35.2550] [main-comp-ctx-133] Dish washed 42.
-[04:28:35.2550] [main-comp-ctx-133] O:Dish(42,Clean)
-[04:28:35.2570] [main-comp-ctx-134] E: 43
-[04:28:35.2580] [main-comp-ctx-133] washing dish 43
-[04:28:35.2580] [main-comp-ctx-134] E: 44
-[04:28:35.2580] [main-comp-ctx-134] E: 45
-[04:28:35.4580] [main-comp-ctx-133] Dish washed 43.
-[04:28:35.4580] [main-comp-ctx-133] O:Dish(43,Clean)
-[04:28:35.4600] [main-comp-ctx-133] washing dish 44
-[04:28:35.6600] [main-comp-ctx-133] Dish washed 44.
-[04:28:35.6610] [main-comp-ctx-133] O:Dish(44,Clean)
-[04:28:35.6620] [main-comp-ctx-133] washing dish 45
-[04:28:35.8620] [main-comp-ctx-133] Dish washed 45.
-[04:28:35.8630] [main-comp-ctx-133] O:Dish(45,Clean)
-[04:28:35.8630] [main-comp-ctx-133] E: 46
-[04:28:35.8640] [main-comp-ctx-133] E: 47
-[04:28:35.8640] [main-comp-ctx-133] E: 48
-[04:28:35.8640] [main-comp-ctx-134] washing dish 46
-[04:28:36.0660] [main-comp-ctx-134] Dish washed 46.
-[04:28:36.0660] [main-comp-ctx-134] O:Dish(46,Clean)
-[04:28:36.0670] [main-comp-ctx-134] washing dish 47
-[04:28:36.2670] [main-comp-ctx-134] Dish washed 47.
-[04:28:36.2680] [main-comp-ctx-134] O:Dish(47,Clean)
-[04:28:36.2680] [main-comp-ctx-134] washing dish 48
-[04:28:36.4690] [main-comp-ctx-134] Dish washed 48.
-[04:28:36.4690] [main-comp-ctx-134] O:Dish(48,Clean)
-[04:28:36.4700] [main-comp-ctx-134] E: 49
-[04:28:36.4720] [main-comp-ctx-134] E: 50
-[04:28:36.4720] [main-comp-ctx-133] washing dish 49
-[04:28:36.4730] [main-comp-ctx-134] E: 51
-[04:28:36.6720] [main-comp-ctx-133] Dish washed 49.
-[04:28:36.6730] [main-comp-ctx-133] O:Dish(49,Clean)
-[04:28:36.6730] [main-comp-ctx-133] washing dish 50
-[04:28:36.8740] [main-comp-ctx-133] Dish washed 50.
-[04:28:36.8740] [main-comp-ctx-133] O:Dish(50,Clean)
-[04:28:36.8750] [main-comp-ctx-133] washing dish 51
-[04:28:37.0750] [main-comp-ctx-133] Dish washed 51.
-[04:28:37.0760] [main-comp-ctx-133] O:Dish(51,Clean)
-[04:28:37.0770] [main-comp-ctx-133] E: 52
-[04:28:37.0770] [main-comp-ctx-133] E: 53
-[04:28:37.0780] [main-comp-ctx-133] E: 54
-[04:28:37.0780] [main-comp-ctx-134] washing dish 52
-[04:28:37.2790] [main-comp-ctx-134] Dish washed 52.
-[04:28:37.2790] [main-comp-ctx-134] O:Dish(52,Clean)
-[04:28:37.2800] [main-comp-ctx-134] washing dish 53
-[04:28:37.4800] [main-comp-ctx-134] Dish washed 53.
-[04:28:37.4810] [main-comp-ctx-134] O:Dish(53,Clean)
-[04:28:37.4810] [main-comp-ctx-134] washing dish 54
-[04:28:37.6820] [main-comp-ctx-134] Dish washed 54.
-[04:28:37.6820] [main-comp-ctx-134] O:Dish(54,Clean)
-[04:28:37.6830] [main-comp-ctx-134] E: 55
-[04:28:37.6840] [main-comp-ctx-133] washing dish 55
-[04:28:37.6830] [main-comp-ctx-134] E: 56
-[04:28:37.6840] [main-comp-ctx-134] E: 57
-[04:28:37.8840] [main-comp-ctx-133] Dish washed 55.
-[04:28:37.8850] [main-comp-ctx-133] O:Dish(55,Clean)
-[04:28:37.8850] [main-comp-ctx-133] washing dish 56
-[04:28:38.0860] [main-comp-ctx-133] Dish washed 56.
-[04:28:38.0860] [main-comp-ctx-133] O:Dish(56,Clean)
-[04:28:38.0870] [main-comp-ctx-133] washing dish 57
-[04:28:38.2880] [main-comp-ctx-133] Dish washed 57.
-[04:28:38.2880] [main-comp-ctx-133] O:Dish(57,Clean)
-[04:28:38.2900] [main-comp-ctx-133] E: 58
-[04:28:38.2900] [main-comp-ctx-134] washing dish 58
-[04:28:38.2900] [main-comp-ctx-133] E: 59
-[04:28:38.2920] [main-comp-ctx-133] E: 60
-[04:28:38.4910] [main-comp-ctx-134] Dish washed 58.
-[04:28:38.4910] [main-comp-ctx-134] O:Dish(58,Clean)
-[04:28:38.4920] [main-comp-ctx-134] washing dish 59
-[04:28:38.6920] [main-comp-ctx-134] Dish washed 59.
-[04:28:38.6930] [main-comp-ctx-134] O:Dish(59,Clean)
-[04:28:38.6930] [main-comp-ctx-134] washing dish 60
-[04:28:38.8940] [main-comp-ctx-134] Dish washed 60.
-[04:28:38.8940] [main-comp-ctx-134] O:Dish(60,Clean)
-[04:28:38.8950] [main-comp-ctx-134] E: 61
-[04:28:38.8960] [main-comp-ctx-134] E: 62
-[04:28:38.8960] [main-comp-ctx-133] washing dish 61
-[04:28:38.8960] [main-comp-ctx-134] E: 63
-[04:28:39.0970] [main-comp-ctx-133] Dish washed 61.
-[04:28:39.0970] [main-comp-ctx-133] O:Dish(61,Clean)
-[04:28:39.0980] [main-comp-ctx-133] washing dish 62
-[04:28:39.2980] [main-comp-ctx-133] Dish washed 62.
-[04:28:39.2990] [main-comp-ctx-133] O:Dish(62,Clean)
-[04:28:39.2990] [main-comp-ctx-133] washing dish 63
-[04:28:39.5000] [main-comp-ctx-133] Dish washed 63.
-[04:28:39.5000] [main-comp-ctx-133] O:Dish(63,Clean)
-[04:28:39.5030] [main-comp-ctx-133] E: 64
-[04:28:39.5040] [main-comp-ctx-134] washing dish 64
-[04:28:39.5040] [main-comp-ctx-133] E: 65
-[04:28:39.5060] [main-comp-ctx-133] E: 66
-[04:28:39.7040] [main-comp-ctx-134] Dish washed 64.
-[04:28:39.7050] [main-comp-ctx-134] O:Dish(64,Clean)
-[04:28:39.7050] [main-comp-ctx-134] washing dish 65
-[04:28:39.9060] [main-comp-ctx-134] Dish washed 65.
-[04:28:39.9060] [main-comp-ctx-134] O:Dish(65,Clean)
-[04:28:39.9060] [main-comp-ctx-134] washing dish 66
-[04:28:40.1070] [main-comp-ctx-134] Dish washed 66.
-[04:28:40.1070] [main-comp-ctx-134] O:Dish(66,Clean)
-[04:28:40.1080] [main-comp-ctx-134] E: 67
-[04:28:40.1080] [main-comp-ctx-134] E: 68
-[04:28:40.1090] [main-comp-ctx-134] E: 69
-[04:28:40.1090] [main-comp-ctx-133] washing dish 67
-[04:28:40.3110] [main-comp-ctx-133] Dish washed 67.
-[04:28:40.3110] [main-comp-ctx-133] O:Dish(67,Clean)
-[04:28:40.3120] [main-comp-ctx-133] washing dish 68
-[04:28:40.5120] [main-comp-ctx-133] Dish washed 68.
-[04:28:40.5130] [main-comp-ctx-133] O:Dish(68,Clean)
-[04:28:40.5140] [main-comp-ctx-133] washing dish 69
-[04:28:40.7140] [main-comp-ctx-133] Dish washed 69.
-[04:28:40.7150] [main-comp-ctx-133] O:Dish(69,Clean)
-[04:28:40.7160] [main-comp-ctx-134] E: 70
-[04:28:40.7160] [main-comp-ctx-134] E: 71
-[04:28:40.7170] [main-comp-ctx-134] E: 72
-[04:28:40.7170] [main-comp-ctx-134] washing dish 70
-[04:28:40.9180] [main-comp-ctx-134] Dish washed 70.
-[04:28:40.9180] [main-comp-ctx-134] O:Dish(70,Clean)
-[04:28:40.9190] [main-comp-ctx-134] washing dish 71
-[04:28:41.1190] [main-comp-ctx-134] Dish washed 71.
-[04:28:41.1190] [main-comp-ctx-134] O:Dish(71,Clean)
-[04:28:41.1200] [main-comp-ctx-134] washing dish 72
-[04:28:41.3200] [main-comp-ctx-134] Dish washed 72.
-[04:28:41.3210] [main-comp-ctx-134] O:Dish(72,Clean)
-[04:28:41.3210] [main-comp-ctx-134] E: 73
-[04:28:41.3220] [main-comp-ctx-134] E: 74
-[04:28:41.3220] [main-comp-ctx-133] washing dish 73
-[04:28:41.3220] [main-comp-ctx-134] E: 75
-[04:28:41.5230] [main-comp-ctx-133] Dish washed 73.
-[04:28:41.5230] [main-comp-ctx-133] O:Dish(73,Clean)
-[04:28:41.5230] [main-comp-ctx-133] washing dish 74
-[04:28:41.7240] [main-comp-ctx-133] Dish washed 74.
-[04:28:41.7240] [main-comp-ctx-133] O:Dish(74,Clean)
-[04:28:41.7250] [main-comp-ctx-133] washing dish 75
-[04:28:41.9250] [main-comp-ctx-133] Dish washed 75.
-[04:28:41.9250] [main-comp-ctx-133] O:Dish(75,Clean)
-[04:28:41.9260] [main-comp-ctx-133] E: 76
-[04:28:41.9270] [main-comp-ctx-134] washing dish 76
-[04:28:41.9270] [main-comp-ctx-133] E: 77
-[04:28:41.9280] [main-comp-ctx-133] E: 78
-[04:28:42.1270] [main-comp-ctx-134] Dish washed 76.
-[04:28:42.1280] [main-comp-ctx-134] O:Dish(76,Clean)
-[04:28:42.1280] [main-comp-ctx-134] washing dish 77
-[04:28:42.3290] [main-comp-ctx-134] Dish washed 77.
-[04:28:42.3290] [main-comp-ctx-134] O:Dish(77,Clean)
-[04:28:42.3300] [main-comp-ctx-134] washing dish 78
-[04:28:42.5300] [main-comp-ctx-134] Dish washed 78.
-[04:28:42.5310] [main-comp-ctx-134] O:Dish(78,Clean)
-[04:28:42.5320] [main-comp-ctx-133] E: 79
-[04:28:42.5320] [main-comp-ctx-133] E: 80
-[04:28:42.5330] [main-comp-ctx-134] washing dish 79
-[04:28:42.5330] [main-comp-ctx-133] E: 81
-[04:28:42.7330] [main-comp-ctx-134] Dish washed 79.
-[04:28:42.7330] [main-comp-ctx-134] O:Dish(79,Clean)
-[04:28:42.7340] [main-comp-ctx-134] washing dish 80
-[04:28:42.9340] [main-comp-ctx-134] Dish washed 80.
-[04:28:42.9350] [main-comp-ctx-134] O:Dish(80,Clean)
-[04:28:42.9350] [main-comp-ctx-134] washing dish 81
-[04:28:43.1360] [main-comp-ctx-134] Dish washed 81.
-[04:28:43.1360] [main-comp-ctx-134] O:Dish(81,Clean)
-[04:28:43.1370] [main-comp-ctx-134] E: 82
-[04:28:43.1370] [main-comp-ctx-134] E: 83
-[04:28:43.1370] [main-comp-ctx-133] washing dish 82
-[04:28:43.1370] [main-comp-ctx-134] E: 84
---- timeout in scastie after 30s ---
+[04:35:27.0720] [run-main-7] Program starts.
+[04:35:29.4780] [run-main-7] E: 1
+[04:35:29.5160] [run-main-7] E: 2
+[04:35:29.5170] [run-main-7] E: 3
+[04:35:29.5170] [run-main-7] E: 4
+[04:35:29.5170] [run-main-7] E: 5
+[04:35:29.5180] [run-main-7] E: 6
+[04:35:29.5180] [run-main-7] E: 7
+[04:35:29.5190] [run-main-7] E: 8
+[04:35:29.5190] [run-main-7] E: 9
+[04:35:29.5200] [run-main-7] E: 10
+[04:35:29.5200] [run-main-7] E: 11
+[04:35:29.5200] [run-main-7] E: 12
+[04:35:29.5230] [run-main-7] E: 13
+[04:35:29.5250] [run-main-7] E: 14
+[04:35:29.5280] [run-main-7] E: 15
+[04:35:29.5290] [run-main-7] E: 16
+[04:35:29.5300] [run-main-7] E: 17
+[04:35:29.5320] [run-main-7] E: 18
+[04:35:29.5350] [run-main-7] E: 19
+[04:35:29.5370] [run-main-7] E: 20
+[04:35:29.5380] [run-main-7] E: 21
+[04:35:29.5380] [run-main-7] E: 22
+[04:35:29.5390] [run-main-7] E: 23
+[04:35:29.5400] [run-main-7] E: 24
+[04:35:29.5410] [run-main-7] E: 25
+[04:35:29.5410] [run-main-7] E: 26
+[04:35:29.5420] [run-main-7] E: 27
+[04:35:29.5430] [run-main-7] E: 28
+[04:35:29.5430] [run-main-7] E: 29
+[04:35:29.5430] [run-main-7] E: 30
+[04:35:29.5440] [run-main-7] E: 31
+[04:35:29.5440] [run-main-7] E: 32
+[04:35:29.5450] [run-main-7] E: 33
+[04:35:29.5450] [run-main-7] E: 34
+[04:35:29.5450] [run-main-7] E: 35
+[04:35:29.5450] [run-main-7] E: 36
+[04:35:29.5470] [run-main-7] E: 37
+[04:35:29.5470] [main-comp-ctx-302] washing dish 1
+[04:35:29.5470] [main-comp-ctx-303] washing dish 2
+[04:35:29.5480] [run-main-7] E: 38
+[04:35:29.5480] [run-main-7] E: 39
+[04:35:29.5490] [run-main-7] E: 40
+[04:35:29.5490] [run-main-7] E: 41
+[04:35:29.5490] [run-main-7] E: 42
+[04:35:29.5490] [run-main-7] E: 43
+[04:35:29.5500] [run-main-7] E: 44
+[04:35:29.5500] [run-main-7] E: 45
+[04:35:29.5500] [run-main-7] E: 46
+[04:35:29.5500] [run-main-7] E: 47
+[04:35:29.5510] [run-main-7] E: 48
+[04:35:29.5510] [run-main-7] E: 49
+[04:35:29.5510] [run-main-7] E: 50
+[04:35:29.5520] [run-main-7] E: 51
+[04:35:29.5520] [run-main-7] E: 52
+[04:35:29.5530] [run-main-7] E: 53
+[04:35:29.5530] [run-main-7] E: 54
+[04:35:29.5530] [run-main-7] E: 55
+[04:35:29.5540] [run-main-7] E: 56
+[04:35:29.5540] [run-main-7] E: 57
+[04:35:29.5540] [run-main-7] E: 58
+[04:35:29.5550] [run-main-7] E: 59
+[04:35:29.5550] [run-main-7] E: 60
+[04:35:29.5550] [run-main-7] E: 61
+[04:35:29.5560] [run-main-7] E: 62
+[04:35:29.5580] [run-main-7] E: 63
+[04:35:29.5590] [run-main-7] E: 64
+[04:35:29.5590] [run-main-7] E: 65
+[04:35:29.5590] [run-main-7] E: 66
+[04:35:29.5610] [run-main-7] E: 67
+[04:35:29.7560] [main-comp-ctx-303] Dish washed 1.
+[04:35:29.7570] [main-comp-ctx-303] O:Dish(1,Clean)
+[04:35:29.7590] [main-comp-ctx-303] Dish washed 2.
+[04:35:29.7600] [main-comp-ctx-303] O:Dish(2,Clean)
+[04:35:29.7600] [main-comp-ctx-303] washing dish 3
+[04:35:29.7670] [main-comp-ctx-302] washing dish 4
+[04:35:29.9660] [main-comp-ctx-303] Dish washed 3.
+[04:35:29.9660] [main-comp-ctx-303] O:Dish(3,Clean)
+[04:35:29.9670] [main-comp-ctx-303] washing dish 5
+[04:35:29.9680] [main-comp-ctx-302] Dish washed 4.
+[04:35:29.9680] [main-comp-ctx-302] O:Dish(4,Clean)
+[04:35:29.9690] [main-comp-ctx-302] washing dish 6
+[04:35:30.1690] [main-comp-ctx-303] Dish washed 5.
+[04:35:30.1690] [main-comp-ctx-303] O:Dish(5,Clean)
+[04:35:30.1710] [main-comp-ctx-303] Dish washed 6.
+[04:35:30.1710] [main-comp-ctx-302] washing dish 7
+[04:35:30.1710] [main-comp-ctx-303] O:Dish(6,Clean)
+[04:35:30.1720] [main-comp-ctx-303] washing dish 8
+[04:35:30.3720] [main-comp-ctx-302] Dish washed 7.
+[04:35:30.3720] [main-comp-ctx-302] O:Dish(7,Clean)
+[04:35:30.3730] [main-comp-ctx-303] washing dish 9
+[04:35:30.3730] [main-comp-ctx-302] Dish washed 8.
+[04:35:30.3730] [main-comp-ctx-302] O:Dish(8,Clean)
+[04:35:30.3740] [main-comp-ctx-302] washing dish 10
+[04:35:30.5730] [main-comp-ctx-303] Dish washed 9.
+[04:35:30.5740] [main-comp-ctx-303] O:Dish(9,Clean)
+[04:35:30.5750] [main-comp-ctx-303] Dish washed 10.
+[04:35:30.5750] [main-comp-ctx-303] O:Dish(10,Clean)
+[04:35:30.5750] [main-comp-ctx-302] washing dish 11
+[04:35:30.5760] [main-comp-ctx-303] washing dish 12
+[04:35:30.7760] [main-comp-ctx-302] Dish washed 11.
+[04:35:30.7770] [main-comp-ctx-302] O:Dish(11,Clean)
+[04:35:30.7770] [main-comp-ctx-303] washing dish 13
+[04:35:30.7770] [main-comp-ctx-302] Dish washed 12.
+[04:35:30.7780] [main-comp-ctx-302] O:Dish(12,Clean)
+[04:35:30.7790] [main-comp-ctx-302] washing dish 14
+[04:35:30.9780] [main-comp-ctx-303] Dish washed 13.
+[04:35:30.9780] [main-comp-ctx-303] O:Dish(13,Clean)
+[04:35:30.9790] [main-comp-ctx-302] Dish washed 14.
+[04:35:30.9800] [main-comp-ctx-302] O:Dish(14,Clean)
+[04:35:30.9800] [main-comp-ctx-303] washing dish 15
+[04:35:30.9800] [main-comp-ctx-302] washing dish 16
+[04:35:31.1800] [main-comp-ctx-303] Dish washed 15.
+[04:35:31.1800] [main-comp-ctx-302] washing dish 17
+[04:35:31.1810] [main-comp-ctx-303] O:Dish(15,Clean)
+[04:35:31.1810] [main-comp-ctx-303] Dish washed 16.
+[04:35:31.1810] [main-comp-ctx-303] O:Dish(16,Clean)
+[04:35:31.1810] [main-comp-ctx-303] washing dish 18
+[04:35:31.3810] [main-comp-ctx-302] Dish washed 17.
+[04:35:31.3820] [main-comp-ctx-302] O:Dish(17,Clean)
+[04:35:31.3820] [main-comp-ctx-303] washing dish 19
+[04:35:31.3830] [main-comp-ctx-302] Dish washed 18.
+[04:35:31.3830] [main-comp-ctx-302] O:Dish(18,Clean)
+[04:35:31.3840] [main-comp-ctx-302] washing dish 20
+[04:35:31.5830] [main-comp-ctx-303] Dish washed 19.
+[04:35:31.5840] [main-comp-ctx-303] O:Dish(19,Clean)
+[04:35:31.5840] [main-comp-ctx-303] washing dish 21
+[04:35:31.5860] [main-comp-ctx-302] Dish washed 20.
+[04:35:31.5870] [main-comp-ctx-302] O:Dish(20,Clean)
+[04:35:31.5890] [main-comp-ctx-302] washing dish 22
+[04:35:31.7850] [main-comp-ctx-303] Dish washed 21.
+[04:35:31.7850] [main-comp-ctx-303] O:Dish(21,Clean)
+[04:35:31.7860] [main-comp-ctx-303] washing dish 23
+[04:35:31.7900] [main-comp-ctx-302] Dish washed 22.
+[04:35:31.7910] [main-comp-ctx-302] O:Dish(22,Clean)
+[04:35:31.7920] [main-comp-ctx-302] washing dish 24
+[04:35:31.9870] [main-comp-ctx-303] Dish washed 23.
+[04:35:31.9870] [main-comp-ctx-303] O:Dish(23,Clean)
+[04:35:31.9880] [main-comp-ctx-303] washing dish 25
+[04:35:31.9930] [main-comp-ctx-302] Dish washed 24.
+[04:35:31.9940] [main-comp-ctx-302] O:Dish(24,Clean)
+[04:35:31.9950] [main-comp-ctx-302] washing dish 26
+[04:35:32.1890] [main-comp-ctx-303] Dish washed 25.
+[04:35:32.1890] [main-comp-ctx-303] O:Dish(25,Clean)
+[04:35:32.1900] [main-comp-ctx-303] washing dish 27
+[04:35:32.1960] [main-comp-ctx-302] Dish washed 26.
+[04:35:32.1960] [main-comp-ctx-302] O:Dish(26,Clean)
+[04:35:32.1970] [main-comp-ctx-302] washing dish 28
+[04:35:32.3910] [main-comp-ctx-303] Dish washed 27.
+[04:35:32.3910] [main-comp-ctx-303] O:Dish(27,Clean)
+[04:35:32.3920] [main-comp-ctx-303] washing dish 29
+[04:35:32.3980] [main-comp-ctx-302] Dish washed 28.
+[04:35:32.3980] [main-comp-ctx-302] O:Dish(28,Clean)
+[04:35:32.3990] [main-comp-ctx-302] washing dish 30
+[04:35:32.5930] [main-comp-ctx-303] Dish washed 29.
+[04:35:32.5930] [main-comp-ctx-303] O:Dish(29,Clean)
+[04:35:32.5940] [main-comp-ctx-303] washing dish 31
+[04:35:32.6000] [main-comp-ctx-302] Dish washed 30.
+[04:35:32.6000] [main-comp-ctx-302] O:Dish(30,Clean)
+[04:35:32.6010] [main-comp-ctx-302] washing dish 32
+[04:35:32.7950] [main-comp-ctx-303] Dish washed 31.
+[04:35:32.7950] [main-comp-ctx-303] O:Dish(31,Clean)
+[04:35:32.7970] [main-comp-ctx-303] washing dish 33
+[04:35:32.8020] [main-comp-ctx-302] Dish washed 32.
+[04:35:32.8020] [main-comp-ctx-302] O:Dish(32,Clean)
+[04:35:32.8030] [main-comp-ctx-302] washing dish 34
+[04:35:32.9980] [main-comp-ctx-303] Dish washed 33.
+[04:35:32.9980] [main-comp-ctx-303] O:Dish(33,Clean)
+[04:35:32.9990] [main-comp-ctx-303] washing dish 35
+[04:35:33.0040] [main-comp-ctx-302] Dish washed 34.
+[04:35:33.0040] [main-comp-ctx-302] O:Dish(34,Clean)
+[04:35:33.0050] [main-comp-ctx-302] washing dish 36
+[04:35:33.2000] [main-comp-ctx-303] Dish washed 35.
+[04:35:33.2010] [main-comp-ctx-303] O:Dish(35,Clean)
+[04:35:33.2020] [main-comp-ctx-303] washing dish 37
+[04:35:33.2060] [main-comp-ctx-302] Dish washed 36.
+[04:35:33.2060] [main-comp-ctx-302] O:Dish(36,Clean)
+[04:35:33.2070] [main-comp-ctx-302] washing dish 38
+[04:35:33.4030] [main-comp-ctx-303] Dish washed 37.
+[04:35:33.4040] [main-comp-ctx-303] O:Dish(37,Clean)
+[04:35:33.4050] [main-comp-ctx-303] washing dish 39
+[04:35:33.4080] [main-comp-ctx-302] Dish washed 38.
+[04:35:33.4080] [main-comp-ctx-302] O:Dish(38,Clean)
+[04:35:33.4090] [main-comp-ctx-302] washing dish 40
+[04:35:33.6060] [main-comp-ctx-303] Dish washed 39.
+[04:35:33.6060] [main-comp-ctx-303] O:Dish(39,Clean)
+[04:35:33.6070] [main-comp-ctx-303] washing dish 41
+[04:35:33.6090] [main-comp-ctx-302] Dish washed 40.
+[04:35:33.6100] [main-comp-ctx-302] O:Dish(40,Clean)
+[04:35:33.6110] [main-comp-ctx-302] washing dish 42
+[04:35:33.8080] [main-comp-ctx-303] Dish washed 41.
+[04:35:33.8090] [main-comp-ctx-303] O:Dish(41,Clean)
+[04:35:33.8100] [main-comp-ctx-303] washing dish 43
+[04:35:33.8120] [main-comp-ctx-302] Dish washed 42.
+[04:35:33.8120] [main-comp-ctx-302] O:Dish(42,Clean)
+[04:35:33.8140] [main-comp-ctx-302] washing dish 44
+[04:35:34.0110] [main-comp-ctx-303] Dish washed 43.
+[04:35:34.0110] [main-comp-ctx-303] O:Dish(43,Clean)
+[04:35:34.0130] [main-comp-ctx-303] washing dish 45
+[04:35:34.0150] [main-comp-ctx-302] Dish washed 44.
+[04:35:34.0150] [main-comp-ctx-302] O:Dish(44,Clean)
+[04:35:34.0170] [main-comp-ctx-302] washing dish 46
+[04:35:34.2130] [main-comp-ctx-303] Dish washed 45.
+[04:35:34.2140] [main-comp-ctx-303] O:Dish(45,Clean)
+[04:35:34.2150] [main-comp-ctx-303] washing dish 47
+[04:35:34.2180] [main-comp-ctx-302] Dish washed 46.
+[04:35:34.2180] [main-comp-ctx-302] O:Dish(46,Clean)
+[04:35:34.2190] [main-comp-ctx-302] washing dish 48
+[04:35:34.4160] [main-comp-ctx-303] Dish washed 47.
+[04:35:34.4170] [main-comp-ctx-303] O:Dish(47,Clean)
+[04:35:34.4170] [main-comp-ctx-303] washing dish 49
+[04:35:34.4200] [main-comp-ctx-302] Dish washed 48.
+[04:35:34.4210] [main-comp-ctx-302] O:Dish(48,Clean)
+[04:35:34.4220] [main-comp-ctx-302] washing dish 50
+[04:35:34.6180] [main-comp-ctx-303] Dish washed 49.
+[04:35:34.6180] [main-comp-ctx-303] O:Dish(49,Clean)
+[04:35:34.6190] [main-comp-ctx-303] washing dish 51
+[04:35:34.6230] [main-comp-ctx-302] Dish washed 50.
+[04:35:34.6230] [main-comp-ctx-302] O:Dish(50,Clean)
+[04:35:34.6240] [main-comp-ctx-302] washing dish 52
+[04:35:34.8200] [main-comp-ctx-303] Dish washed 51.
+[04:35:34.8200] [main-comp-ctx-303] O:Dish(51,Clean)
+[04:35:34.8210] [main-comp-ctx-303] washing dish 53
+[04:35:34.8250] [main-comp-ctx-302] Dish washed 52.
+[04:35:34.8250] [main-comp-ctx-302] O:Dish(52,Clean)
+[04:35:34.8260] [main-comp-ctx-302] washing dish 54
+[04:35:35.0210] [main-comp-ctx-303] Dish washed 53.
+[04:35:35.0220] [main-comp-ctx-303] O:Dish(53,Clean)
+[04:35:35.0230] [main-comp-ctx-303] washing dish 55
+[04:35:35.0280] [main-comp-ctx-302] Dish washed 54.
+[04:35:35.0280] [main-comp-ctx-302] O:Dish(54,Clean)
+[04:35:35.0300] [main-comp-ctx-302] washing dish 56
+[04:35:35.2240] [main-comp-ctx-303] Dish washed 55.
+[04:35:35.2240] [main-comp-ctx-303] O:Dish(55,Clean)
+[04:35:35.2250] [main-comp-ctx-303] washing dish 57
+[04:35:35.2310] [main-comp-ctx-302] Dish washed 56.
+[04:35:35.2310] [main-comp-ctx-302] O:Dish(56,Clean)
+[04:35:35.2330] [main-comp-ctx-302] washing dish 58
+[04:35:35.4250] [main-comp-ctx-303] Dish washed 57.
+[04:35:35.4250] [main-comp-ctx-303] O:Dish(57,Clean)
+[04:35:35.4260] [main-comp-ctx-303] washing dish 59
+[04:35:35.4340] [main-comp-ctx-302] Dish washed 58.
+[04:35:35.4340] [main-comp-ctx-302] O:Dish(58,Clean)
+[04:35:35.4350] [main-comp-ctx-302] washing dish 60
+[04:35:35.6270] [main-comp-ctx-303] Dish washed 59.
+[04:35:35.6270] [main-comp-ctx-303] O:Dish(59,Clean)
+[04:35:35.6280] [main-comp-ctx-303] washing dish 61
+[04:35:35.6350] [main-comp-ctx-302] Dish washed 60.
+[04:35:35.6350] [main-comp-ctx-302] O:Dish(60,Clean)
+[04:35:35.6370] [main-comp-ctx-302] washing dish 62
+[04:35:35.8290] [main-comp-ctx-303] Dish washed 61.
+[04:35:35.8290] [main-comp-ctx-303] O:Dish(61,Clean)
+[04:35:35.8300] [main-comp-ctx-303] washing dish 63
+[04:35:35.8380] [main-comp-ctx-302] Dish washed 62.
+[04:35:35.8380] [main-comp-ctx-302] O:Dish(62,Clean)
+[04:35:35.8390] [main-comp-ctx-302] washing dish 64
+[04:35:36.0310] [main-comp-ctx-303] Dish washed 63.
+[04:35:36.0310] [main-comp-ctx-303] O:Dish(63,Clean)
+[04:35:36.0320] [main-comp-ctx-303] washing dish 65
+[04:35:36.0400] [main-comp-ctx-302] Dish washed 64.
+[04:35:36.0400] [main-comp-ctx-302] O:Dish(64,Clean)
+[04:35:36.0410] [main-comp-ctx-302] washing dish 66
+[04:35:36.2330] [main-comp-ctx-303] Dish washed 65.
+[04:35:36.2330] [main-comp-ctx-303] O:Dish(65,Clean)
+[04:35:36.2340] [main-comp-ctx-303] washing dish 67
+[04:35:36.2420] [main-comp-ctx-302] Dish washed 66.
+[04:35:36.2430] [main-comp-ctx-302] O:Dish(66,Clean)
+[04:35:36.2440] [main-comp-ctx-302] E: 68
+[04:35:36.2440] [main-comp-ctx-302] E: 69
+[04:35:36.2450] [main-comp-ctx-302] E: 70
+[04:35:36.2460] [main-comp-ctx-302] E: 71
+[04:35:36.2470] [main-comp-ctx-302] E: 72
+[04:35:36.2480] [main-comp-ctx-302] E: 73
+[04:35:36.2480] [main-comp-ctx-302] E: 74
+[04:35:36.2490] [main-comp-ctx-302] E: 75
+[04:35:36.2500] [main-comp-ctx-302] E: 76
+[04:35:36.2500] [main-comp-ctx-302] E: 77
+[04:35:36.2510] [main-comp-ctx-302] E: 78
+[04:35:36.2510] [main-comp-ctx-302] E: 79
+[04:35:36.2520] [main-comp-ctx-302] E: 80
+[04:35:36.2520] [main-comp-ctx-302] E: 81
+[04:35:36.2540] [main-comp-ctx-302] E: 82
+[04:35:36.2540] [main-comp-ctx-302] E: 83
+[04:35:36.2550] [main-comp-ctx-302] E: 84
+[04:35:36.2550] [main-comp-ctx-302] E: 85
+[04:35:36.2550] [main-comp-ctx-302] E: 86
+[04:35:36.2560] [main-comp-ctx-302] E: 87
+[04:35:36.2560] [main-comp-ctx-302] E: 88
+[04:35:36.2570] [main-comp-ctx-302] E: 89
+[04:35:36.2570] [main-comp-ctx-302] E: 90
+[04:35:36.2570] [main-comp-ctx-302] E: 91
+[04:35:36.2580] [main-comp-ctx-302] E: 92
+[04:35:36.2580] [main-comp-ctx-302] E: 93
+[04:35:36.2590] [main-comp-ctx-302] E: 94
+[04:35:36.2590] [main-comp-ctx-302] E: 95
+[04:35:36.2600] [main-comp-ctx-302] E: 96
+[04:35:36.2600] [main-comp-ctx-302] E: 97
+[04:35:36.2610] [main-comp-ctx-302] E: 98
+[04:35:36.2610] [main-comp-ctx-302] E: 99
+[04:35:36.2620] [main-comp-ctx-302] E: 100
+[04:35:36.2660] [main-comp-ctx-302] washing dish 68
+[04:35:36.4350] [main-comp-ctx-303] Dish washed 67.
+[04:35:36.4350] [main-comp-ctx-303] O:Dish(67,Clean)
+[04:35:36.4360] [main-comp-ctx-303] washing dish 69
+[04:35:36.4660] [main-comp-ctx-302] Dish washed 68.
+[04:35:36.4670] [main-comp-ctx-302] O:Dish(68,Clean)
+[04:35:36.4680] [main-comp-ctx-302] washing dish 70
+[04:35:36.6370] [main-comp-ctx-303] Dish washed 69.
+[04:35:36.6380] [main-comp-ctx-303] O:Dish(69,Clean)
+[04:35:36.6390] [main-comp-ctx-303] washing dish 71
+[04:35:36.6690] [main-comp-ctx-302] Dish washed 70.
+[04:35:36.6690] [main-comp-ctx-302] O:Dish(70,Clean)
+[04:35:36.6700] [main-comp-ctx-302] washing dish 72
+[04:35:36.8400] [main-comp-ctx-303] Dish washed 71.
+[04:35:36.8410] [main-comp-ctx-303] O:Dish(71,Clean)
+[04:35:36.8410] [main-comp-ctx-303] washing dish 73
+[04:35:36.8710] [main-comp-ctx-302] Dish washed 72.
+[04:35:36.8710] [main-comp-ctx-302] O:Dish(72,Clean)
+[04:35:36.8720] [main-comp-ctx-302] washing dish 74
+[04:35:37.0420] [main-comp-ctx-303] Dish washed 73.
+[04:35:37.0420] [main-comp-ctx-303] O:Dish(73,Clean)
+[04:35:37.0430] [main-comp-ctx-303] washing dish 75
+[04:35:37.0720] [main-comp-ctx-302] Dish washed 74.
+[04:35:37.0720] [main-comp-ctx-302] O:Dish(74,Clean)
+[04:35:37.0740] [main-comp-ctx-302] washing dish 76
+[04:35:37.2430] [main-comp-ctx-303] Dish washed 75.
+[04:35:37.2440] [main-comp-ctx-303] O:Dish(75,Clean)
+[04:35:37.2450] [main-comp-ctx-303] washing dish 77
+[04:35:37.2740] [main-comp-ctx-302] Dish washed 76.
+[04:35:37.2740] [main-comp-ctx-302] O:Dish(76,Clean)
+[04:35:37.2750] [main-comp-ctx-302] washing dish 78
+[04:35:37.4450] [main-comp-ctx-303] Dish washed 77.
+[04:35:37.4460] [main-comp-ctx-303] O:Dish(77,Clean)
+[04:35:37.4470] [main-comp-ctx-303] washing dish 79
+[04:35:37.4760] [main-comp-ctx-302] Dish washed 78.
+[04:35:37.4760] [main-comp-ctx-302] O:Dish(78,Clean)
+[04:35:37.4770] [main-comp-ctx-302] washing dish 80
+[04:35:37.6480] [main-comp-ctx-303] Dish washed 79.
+[04:35:37.6480] [main-comp-ctx-303] O:Dish(79,Clean)
+[04:35:37.6490] [main-comp-ctx-303] washing dish 81
+[04:35:37.6780] [main-comp-ctx-302] Dish washed 80.
+[04:35:37.6780] [main-comp-ctx-302] O:Dish(80,Clean)
+[04:35:37.6790] [main-comp-ctx-302] washing dish 82
+[04:35:37.8490] [main-comp-ctx-303] Dish washed 81.
+[04:35:37.8500] [main-comp-ctx-303] O:Dish(81,Clean)
+[04:35:37.8500] [main-comp-ctx-303] washing dish 83
+[04:35:37.8800] [main-comp-ctx-302] Dish washed 82.
+[04:35:37.8800] [main-comp-ctx-302] O:Dish(82,Clean)
+[04:35:37.8810] [main-comp-ctx-302] washing dish 84
+[04:35:38.0510] [main-comp-ctx-303] Dish washed 83.
+[04:35:38.0510] [main-comp-ctx-303] O:Dish(83,Clean)
+[04:35:38.0530] [main-comp-ctx-303] washing dish 85
+[04:35:38.0820] [main-comp-ctx-302] Dish washed 84.
+[04:35:38.0830] [main-comp-ctx-302] O:Dish(84,Clean)
+[04:35:38.0840] [main-comp-ctx-302] washing dish 86
+[04:35:38.2530] [main-comp-ctx-303] Dish washed 85.
+[04:35:38.2540] [main-comp-ctx-303] O:Dish(85,Clean)
+[04:35:38.2550] [main-comp-ctx-303] washing dish 87
+[04:35:38.2840] [main-comp-ctx-302] Dish washed 86.
+[04:35:38.2850] [main-comp-ctx-302] O:Dish(86,Clean)
+[04:35:38.2850] [main-comp-ctx-302] washing dish 88
+[04:35:38.4550] [main-comp-ctx-303] Dish washed 87.
+[04:35:38.4560] [main-comp-ctx-303] O:Dish(87,Clean)
+[04:35:38.4560] [main-comp-ctx-303] washing dish 89
+[04:35:38.4860] [main-comp-ctx-302] Dish washed 88.
+[04:35:38.4860] [main-comp-ctx-302] O:Dish(88,Clean)
+[04:35:38.4870] [main-comp-ctx-302] washing dish 90
+[04:35:38.6570] [main-comp-ctx-303] Dish washed 89.
+[04:35:38.6570] [main-comp-ctx-303] O:Dish(89,Clean)
+[04:35:38.6570] [main-comp-ctx-303] washing dish 91
+[04:35:38.6870] [main-comp-ctx-302] Dish washed 90.
+[04:35:38.6870] [main-comp-ctx-302] O:Dish(90,Clean)
+[04:35:38.6880] [main-comp-ctx-302] washing dish 92
+[04:35:38.8580] [main-comp-ctx-303] Dish washed 91.
+[04:35:38.8580] [main-comp-ctx-303] O:Dish(91,Clean)
+[04:35:38.8590] [main-comp-ctx-303] washing dish 93
+[04:35:38.8890] [main-comp-ctx-302] Dish washed 92.
+[04:35:38.8890] [main-comp-ctx-302] O:Dish(92,Clean)
+[04:35:38.8890] [main-comp-ctx-302] washing dish 94
+[04:35:39.0600] [main-comp-ctx-303] Dish washed 93.
+[04:35:39.0600] [main-comp-ctx-303] O:Dish(93,Clean)
+[04:35:39.0610] [main-comp-ctx-303] washing dish 95
+[04:35:39.0900] [main-comp-ctx-302] Dish washed 94.
+[04:35:39.0900] [main-comp-ctx-302] O:Dish(94,Clean)
+[04:35:39.0910] [main-comp-ctx-302] washing dish 96
+[04:35:39.2610] [main-comp-ctx-303] Dish washed 95.
+[04:35:39.2620] [main-comp-ctx-303] O:Dish(95,Clean)
+[04:35:39.2620] [main-comp-ctx-303] washing dish 97
+[04:35:39.2920] [main-comp-ctx-302] Dish washed 96.
+[04:35:39.2920] [main-comp-ctx-302] O:Dish(96,Clean)
+[04:35:39.2920] [main-comp-ctx-302] washing dish 98
+[04:35:39.4630] [main-comp-ctx-303] Dish washed 97.
+[04:35:39.4630] [main-comp-ctx-303] O:Dish(97,Clean)
+[04:35:39.4690] [main-comp-ctx-303] washing dish 99
+[04:35:39.4930] [main-comp-ctx-302] Dish washed 98.
+[04:35:39.4930] [main-comp-ctx-302] O:Dish(98,Clean)
+[04:35:39.4940] [main-comp-ctx-302] washing dish 100
+[04:35:39.6700] [main-comp-ctx-303] Dish washed 99.
+[04:35:39.6700] [main-comp-ctx-303] O:Dish(99,Clean)
+[04:35:39.6940] [main-comp-ctx-303] Dish washed 100.
+[04:35:39.6950] [main-comp-ctx-303] O:Dish(100,Clean)
 */
